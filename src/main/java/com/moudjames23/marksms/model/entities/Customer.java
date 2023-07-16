@@ -14,14 +14,14 @@ import javax.persistence.*;
 public class Customer {
 
     @Id
-    @SequenceGenerator(
+   /* @SequenceGenerator(
             name = "customer_sequence",
             sequenceName = "customer_sequence",
-            allocationSize = 100
-    )
+            allocationSize = 100000
+    )*/
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "customer_sequence"
+            strategy = GenerationType.AUTO
+            //generator = "customer_sequence"
     )
     private Long id;
 

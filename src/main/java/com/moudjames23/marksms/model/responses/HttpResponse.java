@@ -1,4 +1,4 @@
-package com.moudjames23.marksms.model;
+package com.moudjames23.marksms.model.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

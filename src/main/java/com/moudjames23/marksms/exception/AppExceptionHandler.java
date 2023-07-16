@@ -1,6 +1,6 @@
 package com.moudjames23.marksms.exception;
 
-import com.moudjames23.marksms.model.HttpResponse;
+import com.moudjames23.marksms.model.responses.HttpResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -50,6 +50,17 @@ public class AppExceptionHandler {
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("Erreurs")
                 .errors(errors)
+                .build();
+
+        return ResponseEntity.badRequest()
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidUploadFileException.class)
+    public ResponseEntity<HttpResponse> invalidFileExceptionHandler(InvalidUploadFileException exception) {
+        HttpResponse response = HttpResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message(exception.getMessage())
                 .build();
 
         return ResponseEntity.badRequest()

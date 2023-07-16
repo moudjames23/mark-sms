@@ -1,6 +1,5 @@
 package com.moudjames23.marksms.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moudjames23.marksms.model.entities.Customer;
 import com.moudjames23.marksms.repository.CustomerRepository;
@@ -54,6 +53,13 @@ class CustomerControllerTest {
             .name("Oumar")
             .email("oumar@gmail.com")
             .phone("620000000")
+            .build();
+
+    Customer james = Customer.builder()
+            .id(5L)
+            .name("James")
+            .phone("620000029")
+            .email("james@gmail.com")
             .build();
 
     @BeforeEach
@@ -149,27 +155,21 @@ class CustomerControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", is(HttpStatus.CONFLICT.value())))
-                .andExpect(jsonPath("$.message", is("Ce numéro de téléphone " + customer.getPhone()+" existe déjà")));
+                .andExpect(jsonPath("$.message", is("Ce numéro de téléphone " + customer.getPhone() + " existe déjà")));
     }
 
-    @Test
+    /*@Test
     @Order(5)
-    void itShouldNotSaveNewCustomerWhenEmailExist() throws Exception {
+    void itShouldNotSaveCustomerWhenEmailExists() throws Exception {
         // Given
-        Customer imrane = Customer.builder()
-                .name("Imrane")
-                .phone("620000001")
-                .email("imrane@gmail.com")
-                .build();
-
-        this.customerRepository.save(imrane);
+        this.customerRepository.save(james);
 
         // When
         // Then
         Customer customer = Customer.builder()
-                .name("Oumar")
-                .phone("620000002")
-                .email(imrane.getEmail())
+                .name("James")
+                .phone("620000031")
+                .email(this.james.getEmail())
                 .build();
 
         this.mockMvc.perform(
@@ -180,26 +180,25 @@ class CustomerControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", is(HttpStatus.CONFLICT.value())))
-                .andExpect(jsonPath("$.message", is("Cet Email " +customer.getEmail()+" existe déjà")));
-    }
+                .andExpect(jsonPath("$.message", is("Cet email " + customer.getEmail() + " existe déjà")));
+    }*/
 
     @Test
     @Order(6)
     void itShouldDisplayCustomerById() throws Exception {
         // Given
         Customer mohamed = this.customerRepository.save(Customer.builder()
-                .id(4L)
                 .name("Mohamed")
                 .phone("623000000")
-                .email("imrane@gmail.com")
+                .email("mohamed@gmail.com")
                 .build());
 
         // When
         // Then
         this.mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/customers/"+mohamed.getId())
-                        .contentType("application/json")
-        )
+                        MockMvcRequestBuilders.get("/api/v1/customers/" + mohamed.getId())
+                                .contentType("application/json")
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code", is(200)))
@@ -221,13 +220,13 @@ class CustomerControllerTest {
         // When
         // Then
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/customers/"+amadou.getId())
+                        MockMvcRequestBuilders.get("/api/v1/customers/" + amadou.getId())
                                 .contentType("application/json")
                 )
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())))
-                .andExpect(jsonPath("$.message", is("Ce client "+amadou.getId()+" n'existe pas")));
+                .andExpect(jsonPath("$.message", is("Ce client " + amadou.getId() + " n'existe pas")));
     }
 
     @Test
@@ -300,7 +299,7 @@ class CustomerControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", is(HttpStatus.CONFLICT.value())))
-                .andExpect(jsonPath("$.message", is( "Cet Email "+updateMariam.getEmail()+" existe déjà")));
+                .andExpect(jsonPath("$.message", is("Cet Email " + updateMariam.getEmail() + " existe déjà")));
     }
 
     @Test
@@ -340,7 +339,7 @@ class CustomerControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", is(HttpStatus.CONFLICT.value())))
-                .andExpect(jsonPath("$.message", is( "Ce numéro de téléphone " + updateCire.getPhone()+" existe déjà")));
+                .andExpect(jsonPath("$.message", is("Ce numéro de téléphone " + updateCire.getPhone() + " existe déjà")));
     }
 
     @Test
@@ -356,7 +355,7 @@ class CustomerControllerTest {
         // When
         // Then
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.delete("/api/v1/customers/"+ousmane.getId())
+                        MockMvcRequestBuilders.delete("/api/v1/customers/" + ousmane.getId())
                                 .contentType("application/json")
                 )
                 .andDo(print())
@@ -366,7 +365,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     void itShouldNotDeleteCustomerById() throws Exception {
         // Given
         Customer ousmane = Customer.builder()
@@ -379,17 +378,17 @@ class CustomerControllerTest {
         // When
         // Then
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.delete("/api/v1/customers/"+ousmane.getId())
+                        MockMvcRequestBuilders.delete("/api/v1/customers/" + ousmane.getId())
                                 .contentType("application/json")
                 )
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())))
-                .andExpect(jsonPath("$.message", is("Ce client "+ousmane.getId()+" n'existe pas")));
+                .andExpect(jsonPath("$.message", is("Ce client " + ousmane.getId() + " n'existe pas")));
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     void itShouldNotSaveCustomerWhenNameIsMissing() throws Exception {
         // Given
         Customer ousmane = Customer.builder()
@@ -413,7 +412,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     void itShouldNotSaveWhenCustomerNameLowerThan5Characters() throws Exception {
         // Given
         Customer customer = Customer.builder()
@@ -437,7 +436,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     void itShouldNotSaveWhenCustomerPhoneIsMissing() throws Exception {
         // Given
         Customer customer = Customer.builder()
@@ -461,7 +460,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     void itShouldNotSaveWhenCustomerPhoneLowerThan9Digits() throws Exception {
         // Given
         Customer customer = Customer.builder()

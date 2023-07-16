@@ -1,16 +1,22 @@
 package com.moudjames23.marksms.controller;
 
-import com.moudjames23.marksms.model.HttpResponse;
+import com.moudjames23.marksms.model.responses.HttpResponse;
 import com.moudjames23.marksms.model.entities.Customer;
 import com.moudjames23.marksms.model.requests.CustomerRequest;
 import com.moudjames23.marksms.model.responses.CustomerResponse;
 import com.moudjames23.marksms.service.CustomerService;
 import org.modelmapper.ModelMapper;
+import org.springframework.batch.core.*;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +27,10 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ModelMapper modelMapper;
+
+    private static final String clientKey = "client";
+
+
 
     public CustomerController(CustomerService customerService, ModelMapper modelMapper) {
         this.customerService = customerService;
@@ -56,7 +66,7 @@ public class CustomerController {
         HttpResponse httpResponse = HttpResponse.builder()
                 .code(HttpStatus.CREATED.value())
                 .message("Client cree avec succes")
-                .data((Map.of("client", modelMapper.map(customer, CustomerResponse.class))))
+                .data((Map.of(clientKey, modelMapper.map(customer, CustomerResponse.class))))
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -64,14 +74,13 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}")
-    public ResponseEntity<HttpResponse> show(@PathVariable("customerId") Long customerId)
-    {
+    public ResponseEntity<HttpResponse> show(@PathVariable("customerId") Long customerId) {
         Customer customer = this.customerService.show(customerId);
 
         HttpResponse httpResponse = HttpResponse.builder()
                 .code(HttpStatus.OK.value())
                 .message("Information sur le client")
-                .data((Map.of("client", modelMapper.map(customer, CustomerResponse.class))))
+                .data((Map.of(clientKey, modelMapper.map(customer, CustomerResponse.class))))
                 .build();
 
         return ResponseEntity.ok()
@@ -79,14 +88,13 @@ public class CustomerController {
     }
 
     @PutMapping("/{customerId}")
-    public ResponseEntity<HttpResponse> update(@Valid @RequestBody CustomerRequest request, @PathVariable("customerId") Long customerId)
-    {
+    public ResponseEntity<HttpResponse> update(@Valid @RequestBody CustomerRequest request, @PathVariable("customerId") Long customerId) {
         Customer customer = this.customerService.update(modelMapper.map(request, Customer.class), customerId);
 
         HttpResponse httpResponse = HttpResponse.builder()
                 .code(HttpStatus.OK.value())
                 .message("Mise à jour du client")
-                .data((Map.of("client", modelMapper.map(customer, CustomerResponse.class))))
+                .data((Map.of(clientKey, modelMapper.map(customer, CustomerResponse.class))))
                 .build();
 
         return ResponseEntity.ok()
@@ -94,8 +102,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<HttpResponse> delete(@PathVariable("customerId") Long customerId)
-    {
+    public ResponseEntity<HttpResponse> delete(@PathVariable("customerId") Long customerId) {
         this.customerService.delete(customerId);
 
         HttpResponse httpResponse = HttpResponse.builder()
@@ -106,4 +113,21 @@ public class CustomerController {
         return ResponseEntity.ok()
                 .body(httpResponse);
     }
+
+    @PostMapping("/import")
+    public ResponseEntity<HttpResponse> importCustomers(@RequestParam("file") MultipartFile multipartFile) throws
+            JobInstanceAlreadyCompleteException,
+            JobExecutionAlreadyRunningException,
+            JobParametersInvalidException,
+            JobRestartException, IOException {
+
+        customerService.importData(multipartFile);
+
+        return ResponseEntity.ok()
+                .body(HttpResponse.builder()
+                        .code(HttpStatus.OK.value())
+                        .message("Importation des clients")
+                        .build());
+    }
+
 }
