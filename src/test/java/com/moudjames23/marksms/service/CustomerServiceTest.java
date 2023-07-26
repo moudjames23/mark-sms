@@ -81,7 +81,7 @@ class CustomerServiceTest {
                 .hasMessageContaining("Ce numéro de téléphone " +dalanda.getPhone()+" existe déjà");
     }
 
-    /*@Test
+    @Test
     void itShouldNotSaveCustomerWhenEmailExist() {
         // Given
         // When
@@ -90,8 +90,8 @@ class CustomerServiceTest {
         // Then
         assertThatThrownBy(() -> customerService.create(oumar))
                 .isInstanceOf(ResourceAlreadyExistException.class)
-                .hasMessageContaining("Cet Email " +oumar.getEmail()+" existe déjà");
-    }*/
+                .hasMessageContaining("Cet email " +oumar.getEmail()+" existe déjà");
+    }
 
 
     @Test

@@ -45,10 +45,10 @@ public class CustomerService {
     }
 
     public Customer create(Customer customer) {
-        if (customer.getEmail() != null && customer.getEmail().isEmpty()) {
+        if (customer.getEmail() != null && !customer.getEmail().isEmpty()) {
             customerRepository.findByEmail(customer.getEmail())
                     .ifPresent(c -> {
-                        throw new ResourceAlreadyExistException(getMessage("Cet Email ", customer.getEmail()));
+                        throw new ResourceAlreadyExistException(getMessage("Cet email ", customer.getEmail()));
                     });
         }
 

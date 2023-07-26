@@ -158,7 +158,7 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.message", is("Ce numéro de téléphone " + customer.getPhone() + " existe déjà")));
     }
 
-    /*@Test
+    @Test
     @Order(5)
     void itShouldNotSaveCustomerWhenEmailExists() throws Exception {
         // Given
@@ -181,7 +181,7 @@ class CustomerControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", is(HttpStatus.CONFLICT.value())))
                 .andExpect(jsonPath("$.message", is("Cet email " + customer.getEmail() + " existe déjà")));
-    }*/
+    }
 
     @Test
     @Order(6)
