@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven3.9.4'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/moudjames23/mark-sms']])
+               sh 'mvn clean install'
+            }
+        }
+        
+        stage("Build docker image") {
+            steps{
+                script {
+                    sh 'docker build -t moudjames23/mark-sms .'
+                }
+            }
+        }
+        
+        stage ("Push image to hub") {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'DOCKER_HUB_PASSWORD', variable: 'DOCKER_HUB_PASSWORD')]) {
+                        sh 'docker login -u moudjames23 -p ${DOCKER_HUB_PASSWORD}'    
+                    }
+                    
+                    sh 'docker push moudjames23/mark-sms'
+                }
+            }
+        }
+    }
+}
